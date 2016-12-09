@@ -15,6 +15,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".LogInActivity" />
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".SearchPage" />
+        <activity android:name=".ArtistInfo" />
+        <activity android:name=".AlbumInfo" />
+        <activity android:name=".TrackInfo" />
+        <activity android:name=".UserInfo" />
+        <activity android:name=".UserNameActivity"></activity>
     </application>
 
 </manifest>

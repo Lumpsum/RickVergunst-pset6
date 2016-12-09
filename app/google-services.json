@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "431348659735",
+    "firebase_url": "https://rickvergunst-pset6.firebaseio.com",
+    "project_id": "rickvergunst-pset6",
+    "storage_bucket": "rickvergunst-pset6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431348659735:android:2ed7951e9a7cf718",
+        "android_client_info": {
+          "package_name": "com.example.rick.rickvergunst_pset6"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "431348659735-mn0pj7gortlqragtmujk6c6ihhieccd3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3yZIiRcxNvDpeuAUZth8cXL_lIPfHKiU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">RickVergunst-pset6</string>
+    <string name="logInErrorMes">Error</string>
+    <string name="logInErrorTit">Please, enter both an email and password.</string>
+    <string name="email">example@example.com</string>
+    <string name="password">Password</string>
+    <string name="signUp">Sign Up</string>
+    <string name="logIn">Log In</string>
+    <string name="logOut">Log Out</string>
+    <string name="search">Search</string>
+    <string name="searchHint">Search Query</string>
+    <string name="toSearch">Search Page</string>
+    <string name="similarArtists">Similar Artists</string>
+    <string name="topAlbums">Top Albums</string>
+    <string name="topTracks">Top Tracks</string>
+    <string name="tracks">Tracks</string>
+    <string name="favouriteArtists">Favourite Artists</string>
+    <string name="similarUsers">Similar Users</string>
+    <string name="followedUsers">Followed Users</string>
+    <string name="toHome">Home</string>
+    <string name="userName">Username</string>
+    <string name="setUser">Set Name</string>
+    <string name="welcome">Welcome</string>
 </resources>

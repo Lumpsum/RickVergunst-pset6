@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/activity_album_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.rick.rickvergunst_pset6.MainActivity">
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.rick.rickvergunst_pset6.AlbumInfo">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -12,56 +16,49 @@
         android:fillViewport="true"
         android:layout_above="@+id/bottomButtons"
         >
-    <RelativeLayout
-        android:id="@+id/scrollLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        >
-
-        <TextView
-            android:id="@+id/mainWelcomeText"
+        <RelativeLayout
+            android:id="@+id/scrollLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/welcome"
-            android:textSize="36dp"
-            />
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            >
 
     <TextView
-        android:id="@+id/mainArtistText"
+        android:id="@+id/albumInfoTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/favouriteArtists"
-        android:layout_below="@+id/mainWelcomeText"
+        android:text=""
+        android:textSize="36dp"
+        />
+
+    <TextView
+        android:id="@+id/albumInfoArtist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="26dp"
+        android:layout_below="@+id/albumInfoTitle"
+        />
+
+    <TextView
+        android:id="@+id/albumInfoTracksText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tracks"
+        android:layout_below="@+id/albumInfoArtist"
         />
 
     <ListView
-        android:id="@+id/mainArtistListView"
+        android:id="@+id/albumInfoTracksList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/mainArtistText"
-        >
-    </ListView>
+        android:layout_below="@+id/albumInfoTracksText"
+        ></ListView>
 
-    <TextView
-        android:id="@+id/mainUserText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/followedUsers"
-        android:layout_below="@+id/mainArtistListView"
-        />
-
-    <ListView
-        android:id="@+id/mainUserListView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/mainUserText"
-        >
-    </ListView>
-</RelativeLayout>
+        </RelativeLayout>
     </ScrollView>
     <RelativeLayout
         android:id="@+id/bottomButtons"
