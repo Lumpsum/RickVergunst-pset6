@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,8 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.*;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,6 +46,8 @@ public class ArtistInfo extends AppCompatActivity {
     ArrayList<String> topTracks;
     ArrayList<String> similarArtist;
     ArrayList<String> similarUsers;
+    ArrayList<String> similarUsersNames;
+    ArrayList<String> similarUsersNamesId;
     ArrayAdapter<String> topAlbumAdapter;
     ArrayAdapter<String> topTrackAdapter;
     ArrayAdapter<String> similarArtistAdapater;
@@ -80,11 +82,12 @@ public class ArtistInfo extends AppCompatActivity {
         ref = database.child("users").child(userId).child("favourites").orderByChild("artist").equalTo(artist);
         MainActivity.setButtonText(ref, artistAddButton);
 
-        apiKey = "eb4c34f0485ffa97337735fa01fe3b36";
         topAlbums = new ArrayList<String>();
         topTracks = new ArrayList<String>();
         similarArtist = new ArrayList<String>();
         similarUsers = new ArrayList<String>();
+        similarUsersNames = new ArrayList<String>();
+        similarUsersNamesId = new ArrayList<String>();
 
         artistInfoAlbumListView = (ListView)findViewById(R.id.artistTopAlbums);
         artistInfoTrackListView = (ListView)findViewById(R.id.artistTopTracks);
@@ -94,7 +97,7 @@ public class ArtistInfo extends AppCompatActivity {
         topAlbumAdapter = new ArrayAdapter<String>(this, R.layout.list_item, topAlbums);
         topTrackAdapter = new ArrayAdapter<String>(this, R.layout.list_item, topTracks);
         similarArtistAdapater = new ArrayAdapter<String>(this, R.layout.list_item, similarArtist);
-        similarUsersAdapter = new ArrayAdapter<String>(this, R.layout.list_item, similarUsers);
+        similarUsersAdapter = new ArrayAdapter<String>(this, R.layout.list_item, similarUsersNames);
 
         MainActivity.fillArray(artist, "getTopAlbums", "album", "topalbums", "", "artist", topAlbums);
         MainActivity.fillArray(artist, "getTopTracks", "track", "toptracks", "", "artist", topTracks);
@@ -108,7 +111,14 @@ public class ArtistInfo extends AppCompatActivity {
         onListItemClick(artistInfoSimilarListView, ArtistInfo.this, ArtistInfo.class, "");
         onListItemClick(artistInfoAlbumListView, ArtistInfo.this, AlbumInfo.class, artist + "-");
         onListItemClick(artistInfoTrackListView, ArtistInfo.this, TrackInfo.class, artist + "-");
-        onListItemClick(artistInfoSimilarUsers, ArtistInfo.this, UserInfo.class, "");
+        artistInfoSimilarUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = MainActivity.newIntent(ArtistInfo.this, UserInfo.class);
+                intent.putExtra("name", similarUsersNamesId.get(position));
+                startActivity(intent);
+            }
+        });
 
         artistAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,8 +140,12 @@ public class ArtistInfo extends AppCompatActivity {
             }
         });
 
-        DatabaseReference ref = database.child("artist").child(artist);
-        MainActivity.fillArrayFireBase(ref, "user", similarUsers, similarUsersAdapter, userId);
+        findUsers(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.setUserArrays(database.child("usernames"), similarUsers, similarUsersNames, similarUsersNamesId, similarUsersAdapter);
+            }
+        });
 
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,6 +178,29 @@ public class ArtistInfo extends AppCompatActivity {
                 Intent intent = MainActivity.newIntent(context, thisClass);
                 intent.putExtra("name", data + text);
                 startActivity(intent);
+            }
+        });
+    }
+
+    public void findUsers(final Runnable onLoaded) {
+        DatabaseReference ref = database.child("artist").child(artist);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    String value = postSnapshot.child("user").getValue(String.class);
+                    if (value != null) {
+                        if (!value.equals(userId)) {
+                            similarUsers.add(value);
+                        }
+                    }
+                }
+                onLoaded.run();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }

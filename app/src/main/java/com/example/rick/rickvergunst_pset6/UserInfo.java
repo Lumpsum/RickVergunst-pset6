@@ -14,9 +14,12 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -28,8 +31,14 @@ public class UserInfo extends AppCompatActivity {
     Button userInfoAddRemoveButton;
     TextView userInfoName;
     ListView userInfoArtistListView;
-    ArrayList<String> userInfoAristList;
+    ArrayList<String> userInfoArtistList;
     ArrayAdapter<String> userInfoArtistAdapter;
+    ListView userInfoAlbumListView;
+    ArrayList<String> userInfoAlbumList;
+    ArrayAdapter<String> userInfoAlbumAdapter;
+    ListView userInfoTrackListView;
+    ArrayList<String> userInfoTrackList;
+    ArrayAdapter<String> userInfoTrackAdapter;
     String name;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
@@ -59,17 +68,45 @@ public class UserInfo extends AppCompatActivity {
         MainActivity.setButtonText(ref, userInfoAddRemoveButton);
 
         userInfoName = (TextView) findViewById(R.id.userInfoName);
-        userInfoName.setText(name);
+        database.child("usernames").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if (postSnapshot.hasChild(name)) {
+                        userInfoName.setText(postSnapshot.child(name).getValue().toString());
+                    }
+                }
+            }
 
-        userInfoAristList = new ArrayList<String>();
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        userInfoArtistList = new ArrayList<String>();
         userInfoArtistListView = (ListView) findViewById(R.id.userInfoArtistListView);
-        userInfoArtistAdapter = new ArrayAdapter<String>(UserInfo.this, R.layout.list_item, userInfoAristList);
+        userInfoArtistAdapter = new ArrayAdapter<String>(UserInfo.this, R.layout.list_item, userInfoArtistList);
         userInfoArtistListView.setAdapter(userInfoArtistAdapter);
 
+        userInfoAlbumList = new ArrayList<String>();
+        userInfoAlbumListView = (ListView) findViewById(R.id.userInfoAlbumListView);
+        userInfoAlbumAdapter = new ArrayAdapter<String>(UserInfo.this, R.layout.list_item, userInfoAlbumList);
+        userInfoAlbumListView.setAdapter(userInfoAlbumAdapter);
+
+        userInfoTrackList = new ArrayList<String>();
+        userInfoTrackListView = (ListView) findViewById(R.id.userInfoTrackListView);
+        userInfoTrackAdapter = new ArrayAdapter<String>(UserInfo.this, R.layout.list_item, userInfoTrackList);
+        userInfoTrackListView.setAdapter(userInfoTrackAdapter);
+
         DatabaseReference ref = database.child("users").child(name).child("favourites");
-        MainActivity.fillArrayFireBase(ref, "artist", userInfoAristList, userInfoArtistAdapter, name);
+        MainActivity.fillArrayFireBase(ref, "artist", userInfoArtistList, userInfoArtistAdapter, name);
+        MainActivity.fillArrayFireBase(ref, "album", userInfoAlbumList, userInfoAlbumAdapter, name);
+        MainActivity.fillArrayFireBase(ref, "track", userInfoTrackList, userInfoTrackAdapter, name);
 
         onListItemClick(userInfoArtistListView, UserInfo.this, ArtistInfo.class, "");
+        onListItemClick(userInfoAlbumListView, UserInfo.this, AlbumInfo.class, "");
+        onListItemClick(userInfoTrackListView, UserInfo.this, TrackInfo.class, "");
 
         userInfoAddRemoveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,6 +145,7 @@ public class UserInfo extends AppCompatActivity {
             }
         });
     }
+
 
     private void onListItemClick(ListView lv, final Context context, final Class thisClass, final String data) {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {

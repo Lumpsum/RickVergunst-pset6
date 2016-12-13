@@ -4,26 +4,11 @@
     android:id="@+id/activity_album_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.rick.rickvergunst_pset6.AlbumInfo">
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:layout_above="@+id/bottomButtons"
-        >
         <RelativeLayout
-            android:id="@+id/scrollLayout"
+            android:id="@+id/first"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
+            android:layout_height="wrap_content"
             >
 
     <TextView
@@ -32,7 +17,17 @@
         android:layout_height="wrap_content"
         android:text=""
         android:textSize="36dp"
+        android:layout_toLeftOf="@+id/albumInfoButton"
         />
+            <Button
+                android:id="@+id/albumInfoButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_alignParentRight="true"
+                />
+            </RelativeLayout>
+
 
     <TextView
         android:id="@+id/albumInfoArtist"
@@ -40,15 +35,26 @@
         android:layout_height="wrap_content"
         android:text=""
         android:textSize="26dp"
-        android:layout_below="@+id/albumInfoTitle"
+        android:layout_below="@+id/first"
         />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_below="@+id/albumInfoArtist"
+        >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@+id/albumInfoArtist"
+        android:layout_weight="0.5"
+        >
 
     <TextView
         android:id="@+id/albumInfoTracksText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/tracks"
-        android:layout_below="@+id/albumInfoArtist"
         />
 
     <ListView
@@ -57,9 +63,29 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/albumInfoTracksText"
         ></ListView>
-
         </RelativeLayout>
-    </ScrollView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@+id/albumInfoArtist"
+        android:layout_weight="0.5"
+        >
+
+        <TextView
+            android:id="@+id/albumInfoUserText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/similarUsers"
+            />
+
+        <ListView
+            android:id="@+id/albumInfoUserList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/albumInfoUserText"
+            ></ListView>
+    </RelativeLayout>
+    </LinearLayout>
     <RelativeLayout
         android:id="@+id/bottomButtons"
         android:layout_width="match_parent"

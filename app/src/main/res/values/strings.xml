@@ -21,4 +21,6 @@
     <string name="userName">Username</string>
     <string name="setUser">Set Name</string>
     <string name="welcome">Welcome</string>
+    <string name="favouriteAlbums">Favourite Albums</string>
+    <string name="favouriteTracks">Favourite Tracks</string>
 </resources>

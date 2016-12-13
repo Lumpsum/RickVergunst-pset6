@@ -10,9 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -40,17 +44,25 @@ public class MainActivity extends AppCompatActivity {
     protected Button homeButton;
     TextView welcomeText;
     ListView mainArtistListView;
+    ListView mainAlbumListView;
+    ListView mainTrackListView;
     ListView mainUserListView;
     ArrayList<String> mainFavouriteArtists;
+    ArrayList<String> mainFavouriteAlbums;
+    ArrayList<String> mainFavouriteTracks;
     ArrayList<String> mainFavouriteUsers;
+    ArrayList<String> mainFavouriteUsersNames;
+    ArrayList<String> mainFavouriteUsersNamesId;
     ArrayAdapter artistAdapter;
+    ArrayAdapter albumAdapter;
+    ArrayAdapter trackAdapter;
     ArrayAdapter userAdapter;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference database;
     private String userId;
-    private SharedPreferences preferenceSettings;
-    private static final int PREFERENCE_MODE_PRIVATE = 0;
+    SharedPreferences sharedPreferences;
+    public static final String Name = "nameKey";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         homeButton = (Button)findViewById(R.id.toHomeButton);
         welcomeText = (TextView)findViewById(R.id.mainWelcomeText);
         mainArtistListView = (ListView)findViewById(R.id.mainArtistListView);
+        mainAlbumListView = (ListView)findViewById(R.id.mainAlbumListView);
+        mainTrackListView = (ListView)findViewById(R.id.mainTrackListView);
         mainUserListView = (ListView)findViewById(R.id.mainUserListView);
 
         // Assign firebase variables
@@ -73,49 +87,78 @@ public class MainActivity extends AppCompatActivity {
         artistAdapter = new ArrayAdapter(this, R.layout.list_item, mainFavouriteArtists);
         mainArtistListView.setAdapter(artistAdapter);
 
+        mainFavouriteAlbums = new ArrayList<String>();
+        albumAdapter = new ArrayAdapter(this, R.layout.list_item, mainFavouriteAlbums);
+        mainAlbumListView.setAdapter(albumAdapter);
+
+        mainFavouriteTracks = new ArrayList<String>();
+        trackAdapter = new ArrayAdapter(this, R.layout.list_item, mainFavouriteTracks);
+        mainTrackListView.setAdapter(trackAdapter);
+
         mainFavouriteUsers = new ArrayList<String>();
-        userAdapter = new ArrayAdapter(this, R.layout.list_item, mainFavouriteUsers);
+        mainFavouriteUsersNames = new ArrayList<String>();
+        mainFavouriteUsersNamesId = new ArrayList<String>();
+        userAdapter = new ArrayAdapter(this, R.layout.list_item, mainFavouriteUsersNames);
         mainUserListView.setAdapter(userAdapter);
 
-        preferenceSettings = PreferenceManager.getDefaultSharedPreferences(this);
-
-        String userName = preferenceSettings.getString("name", null);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         // If user is not logged in, launch log in activity
         if (firebaseUser == null) {
             startActivity(newIntent(this, LogInActivity.class));
         }
         else {
-            userId = firebaseUser.getUid();
-            welcomeText.setText(welcomeText.getText().toString() + userName);
+            if (!sharedPreferences.contains(Name)) {
+                startActivity(newIntent(MainActivity.this, UserNameActivity.class));
+            } else {
+                userId = firebaseUser.getUid();
+                welcomeText.setText(welcomeText.getText().toString() + " " + sharedPreferences.getString(Name, ""));
 
-            homeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(newIntent(MainActivity.this, MainActivity.class));;
-                }
-            });
+                homeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(newIntent(MainActivity.this, MainActivity.class));
+                    }
+                });
 
-            logOutButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(signOut(MainActivity.this, firebaseAuth));
-                }
-            });
+                logOutButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(signOut(MainActivity.this, firebaseAuth));
+                    }
+                });
 
-            searchPageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(newIntent(MainActivity.this, SearchPage.class));
-                }
-            });
+                searchPageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(newIntent(MainActivity.this, SearchPage.class));
+                    }
+                });
 
-            DatabaseReference ref = database.child("users").child(userId).child("favourites");
-            fillArrayFireBase(ref, "artist", mainFavouriteArtists, artistAdapter, "");
-            fillArrayFireBase(ref, "user", mainFavouriteUsers, userAdapter, "");
+                DatabaseReference ref = database.child("users").child(userId).child("favourites");
+                fillArrayFireBase(ref, "artist", mainFavouriteArtists, artistAdapter, "");
+                fillArrayFireBase(ref, "album", mainFavouriteAlbums, albumAdapter, "");
+                fillArrayFireBase(ref, "track", mainFavouriteTracks, trackAdapter, "");
+                findUsers(new Runnable() {
+                    @Override
+                    public void run() {
+                        setUserArrays(database.child("usernames"), mainFavouriteUsers, mainFavouriteUsersNames, mainFavouriteUsersNamesId, userAdapter);
+                    }
+                });
 
-            onListItemClick(mainArtistListView, MainActivity.this, ArtistInfo.class, "");
-            onListItemClick(mainUserListView, MainActivity.this, UserInfo.class, "");
+
+                onListItemClick(mainArtistListView, MainActivity.this, ArtistInfo.class, "");
+                onListItemClick(mainAlbumListView, MainActivity.this, AlbumInfo.class, "");
+                onListItemClick(mainTrackListView, MainActivity.this, TrackInfo.class, "");
+                mainUserListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = MainActivity.newIntent(MainActivity.this, UserInfo.class);
+                        intent.putExtra("name", mainFavouriteUsersNamesId.get(position));
+                        startActivity(intent);
+                    }
+                });
+            }
         }
     }
 
@@ -133,7 +176,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-                adapter.notifyDataSetChanged();
+                if (adapter != null) {
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -141,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     //General function to call a new activity and clear the stack
@@ -254,6 +300,52 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = MainActivity.newIntent(context, thisClass);
                 intent.putExtra("name", data + text);
                 startActivity(intent);
+            }
+        });
+    }
+
+    public void findUsers(final Runnable onLoaded) {
+        DatabaseReference ref = database.child("users").child(userId).child("favourites");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    String value = postSnapshot.child("user").getValue(String.class);
+                    if (value != null) {
+                        if (!value.equals(userId)) {
+                            mainFavouriteUsers.add(value);
+                        }
+                    }
+                }
+                onLoaded.run();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static void setUserArrays(final DatabaseReference ref ,final ArrayList ids, final ArrayList userNames, final ArrayList userNamesId, final ArrayAdapter<String> adapter) {
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    for (Object id : ids) {
+                        if (postSnapshot.hasChild(id.toString())) {
+                            String finalUserValue = postSnapshot.child(id.toString()).getValue().toString();
+                            userNames.add(finalUserValue);
+                            userNamesId.add(id);
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
