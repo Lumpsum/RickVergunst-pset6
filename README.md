@@ -1,6 +1,5 @@
 ###My Music Database
 
-This app lets you search your favourite artist, album or track, where you will be able to add those to your favourites list.
-Next to that you can see other users that liked those artists and are able to look at their favourites and even add them to create a shortcut to that user.
-This app is based on the last.fm api and uses a firebase to keep track of the accounts.
-The log in details are an email and a password which are anonymous to the world.
+This app let's the user create an account and select an username. Afterwards the  user can search through the last.fm database through a searchpage for an artist, album or track. After selecting for example an artist the user can see similar bands, the top albums and top tracks of that artist, furthermore the user can see other users usernames that like that particular artist as well. By clicking on these items the user can navigate throug the app and add his favourites. These will than be added to the users main page so that the user has quick access to all his favourite music and users that he decides to follow. After chosing an username the user can still change his name through the change username button.
+
+This app allows for orientation change and will scale and adjust accordingly to try and fit your screen. The app works best if one user is used per device because the username is also saved locally for quicker access. It is however possible to use multiple account.
