@@ -25,8 +25,14 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.rick.rickvergunst_pset6.LoadFonts.retrieveTypeFace;
+
+/**
+ * Class that shows track info and users that like this track
+ */
 public class TrackInfo extends AppCompatActivity {
 
+    //Initiate variables
     protected Button logOutButton;
     protected Button searchPageButton;
     protected Button homeButton;
@@ -52,9 +58,17 @@ public class TrackInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_info);
 
+        //Retrieve data from the source activity
         Intent intent = getIntent();
         track = intent.getStringExtra("name");
 
+        //Removes [Explicit] from the track, in order for Firebase to add the track
+        if (track.contains("[Explicit]")) {
+            track = track.replace("[Explicit]", "");
+            track.trim();
+        }
+
+        //Assign the layout elements to variables
         logOutButton = (Button)findViewById(R.id.logOutButton);
         searchPageButton = (Button)findViewById(R.id.toSearchPageButton);
         homeButton = (Button)findViewById(R.id.toHomeButton);
@@ -62,33 +76,46 @@ public class TrackInfo extends AppCompatActivity {
 
         trackInfoSimilarUsers = (ListView)findViewById(R.id.trackInfoUserList);
 
+        trackInfoTitle = (TextView)findViewById(R.id.trackInfoTitle);
+        trackInfoArtist = (TextView)findViewById(R.id.trackInfoArtist);
+        trackInfoAlbum = (TextView)findViewById(R.id.trackInfoAlbum);
+
+        //Initiate the firebase variables
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance().getReference();
         userId = firebaseUser.getUid();
 
+        //Set the button text according to whether a node exists
         ref = database.child("users").child(userId).child("favourites").orderByChild("track").equalTo(track);
         MainActivity.setButtonText(ref, trackInfoButton);
 
-        trackInfoTitle = (TextView)findViewById(R.id.trackInfoTitle);
-        trackInfoArtist = (TextView)findViewById(R.id.trackInfoArtist);
-        trackInfoAlbum = (TextView)findViewById(R.id.trackInfoAlbum);
-
+        //Set the textview fonts and text
+        trackInfoTitle.setTypeface(retrieveTypeFace(this, 0));
         trackInfoTitle.setText(track.split("\\-")[1]);
+        trackInfoArtist.setTypeface(retrieveTypeFace(this, 0));
         trackInfoArtist.setText(track.split("\\-")[0]);
 
+        //Initiate the array lists needed
         array = new ArrayList<String>();
         similarUsers = new ArrayList<String>();
         similarUsersNames = new ArrayList<String>();
         similarUsersNamesId = new ArrayList<String>();
 
+        //Fill the array and set the font and text accordingly
         MainActivity.fillArray(track, "getInfo", "album", "track", "", "track", array);
-        trackInfoAlbum.setText(array.get(0));
+        trackInfoAlbum.setTypeface(retrieveTypeFace(this, 0));
+        if (array.size() != 0) {
+            trackInfoAlbum.setText(array.get(0));
+        }
 
-        trackInfoSimilarUsers = (ListView)findViewById(R.id.trackInfoUserList);
+        //Initaite the adapter
         similarUsersAdapter = new ArrayAdapter<String>(this, R.layout.list_item, similarUsersNames);
+
+        //Assign the adapter to the listview
         trackInfoSimilarUsers.setAdapter(similarUsersAdapter);
 
+        //ListView listener that starts the correct new activity
         trackInfoSimilarUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -115,14 +142,19 @@ public class TrackInfo extends AppCompatActivity {
             }
         });
 
+        //Button listener that either adds or removes a node
         trackInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Adds the track to the favourites and add the user to the track
                 if (trackInfoButton.getText().equals("Add")) {
                     database.child("users").child(userId).child("favourites").push().child("track").setValue(track);
                     database.child("track").child(track).push().child("user").setValue(userId);
                     trackInfoButton.setText("Remove");
                 }
+
+                //Removes the nodes from the favourites and the track node
                 else {
                     ref = database.child("users").child(userId).child("favourites")
                             .orderByChild("track").equalTo(track);
@@ -135,6 +167,7 @@ public class TrackInfo extends AppCompatActivity {
             }
         });
 
+        //Fills the user array with the usernames
         findUsers(new Runnable() {
             @Override
             public void run() {
@@ -142,6 +175,7 @@ public class TrackInfo extends AppCompatActivity {
             }
         });
 
+        //General button handlers of the bottom menu
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,6 +199,14 @@ public class TrackInfo extends AppCompatActivity {
     }
 
     public void findUsers(final Runnable onLoaded) {
+        /**
+         * Method to handles the list clicks and starts a new activity accordingly
+         *
+         * @param lv the listview that the listener should be attached to
+         * @param context the context of activity that calls the function
+         * @param thisClass the new activity that should be started
+         * @param data optional extra data to make the next activity function (album and track need an artist as well)
+         */
         DatabaseReference ref = database.child("track").child(track);
         ref.addValueEventListener(new ValueEventListener() {
             @Override

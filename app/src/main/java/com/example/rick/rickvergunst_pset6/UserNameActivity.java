@@ -15,8 +15,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+/**
+ * Class that handles the setting or changing of an username
+ */
 public class UserNameActivity extends AppCompatActivity {
 
+    //Initialize variables
     Button userNameButton;
     EditText userNameEdit;
     SharedPreferences sharedPreferences;
@@ -32,17 +36,22 @@ public class UserNameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_name);
 
+        //Assign the shared preferences variables
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         editor = sharedPreferences.edit();
 
+        //Assign the layout elements to variables
         userNameButton = (Button)findViewById(R.id.userNameButton);
+
         userNameEdit = (EditText)findViewById(R.id.userNameEdit);
 
+        //Initialize firebase variables
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance().getReference();
         userId = firebaseUser.getUid();
 
+        //Listener that puts the given uservalue in the shared preferences and creates the username node for this userId
         userNameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -43,17 +43,31 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_below="@+id/first"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_above="@+id/bottomButtons"
         >
-        <RelativeLayout
+        <View
+            android:id="@+id/centerVertical"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.25"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"></View>
+
+        <View
+            android:id="@+id/centerHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"></View>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/centerVertical"
+            android:layout_toLeftOf="@id/centerHorizontal"
             android:background="@color/second"
             >
     <TextView
@@ -77,8 +91,9 @@
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.25"
+            android:layout_height="match_parent"
+            android:layout_above="@id/centerVertical"
+            android:layout_toRightOf="@id/centerHorizontal"
             android:background="@color/third"
             >
             <TextView
@@ -102,9 +117,10 @@
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.25"
-            android:background="@color/second"
+            android:layout_height="match_parent"
+            android:layout_below="@id/centerVertical"
+            android:layout_toLeftOf="@id/centerHorizontal"
+            android:background="@color/third"
             >
             <TextView
                 android:id="@+id/mainTrackText"
@@ -127,9 +143,10 @@
         </RelativeLayout>
 <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="0.25"
-    android:background="@color/third"
+    android:layout_height="match_parent"
+    android:layout_below="@id/centerVertical"
+    android:layout_toRightOf="@id/centerHorizontal"
+    android:background="@color/second"
     >
     <TextView
         android:id="@+id/mainUserText"
@@ -150,7 +167,7 @@
         >
     </ListView>
 </RelativeLayout>
-    </LinearLayout>
+    </RelativeLayout>
     <RelativeLayout
         android:id="@+id/bottomButtons"
         android:layout_width="match_parent"

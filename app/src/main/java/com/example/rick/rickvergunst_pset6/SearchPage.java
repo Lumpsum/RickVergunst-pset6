@@ -30,25 +30,26 @@ import static com.example.rick.rickvergunst_pset6.MainActivity.newIntent;
 
 public class SearchPage extends AppCompatActivity {
 
-    FirebaseAuth firebaseAuth;
-    FirebaseUser firebaseUser;
+    //Initailize variables
     protected Button logOutButton;
     protected Button toSearchPageButton;
     protected Button homeButton;
-
     Button searchPageButton;
     EditText searchPageEdit;
     ListView searchPageListView;
-    String apiKey;
+    String spinnerValue;
     ArrayList<String> results;
     ArrayAdapter<String> adapter;
     Spinner searchPageSpinner;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_page);
 
+        //Assign the layout elements to variables
         logOutButton = (Button)findViewById(R.id.logOutButton);
         toSearchPageButton = (Button)findViewById(R.id.toSearchPageButton);
         homeButton = (Button)findViewById(R.id.toHomeButton);
@@ -57,12 +58,17 @@ public class SearchPage extends AppCompatActivity {
         searchPageEdit = (EditText)findViewById(R.id.searchPageEdit);
         searchPageListView = (ListView)findViewById(R.id.searchPageListView);
         searchPageSpinner = (Spinner)findViewById(R.id.searchPageSpinner);
+
+        //Fill the array with items for the spinner
         String[] dropdown = new String[]{"Artist", "Album", "Tracks"};
+
+        //Iniate the adapter for the spinner with the array
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, dropdown);
+
+        //Assign the adapter to the spinner
         searchPageSpinner.setAdapter(spinnerAdapter);
 
-        apiKey = "eb4c34f0485ffa97337735fa01fe3b36";
-
+        //Initiate the array that contains the search results
         results = new ArrayList<String>();
 
         // Assign firebase variables
@@ -74,17 +80,29 @@ public class SearchPage extends AppCompatActivity {
             startActivity(newIntent(this, LogInActivity.class));
         }
 
+        //Checks whether the activity is called from orientation change and fills the array accordingly
+        if (savedInstanceState != null) {
+            results = savedInstanceState.getStringArrayList("results");
+        }
+
+        //Iniate the adapter for the search results
         adapter = new ArrayAdapter<String>(this, R.layout.list_item, results);
+
+
+        //Assign the adapter to the search listview
         searchPageListView.setAdapter(adapter);
 
+        //On click listener that handles based on the given query and chosen spinner
         searchPageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String userValue = searchPageEdit.getText().toString();
                 results.clear();
                 AsyncTask<String, String, StringBuilder> aSyncTask = new ASyncTask();
-                String spinnerValue = searchPageSpinner.getSelectedItem().toString();
+                spinnerValue = searchPageSpinner.getSelectedItem().toString();
                 String selected = "";
+
+                //Switch that adjusts the variables based on the spinner value
                 switch (spinnerValue) {
                     case "Artist":
                         selected = "artist";
@@ -98,18 +116,21 @@ public class SearchPage extends AppCompatActivity {
                 }
                 MainActivity.fillArray(userValue, "search", selected, "results", selected + "matches", selected, results);
 
+                //Resets the editText
                 searchPageEdit.setText(null);
                 adapter.notifyDataSetChanged();
             }
         });
 
+        //Listener that acts based on the given results
         searchPageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)view.findViewById(R.id.textview);
                 String text = textView.getText().toString();
-                String spinnerValue = searchPageSpinner.getSelectedItem().toString();
                 Intent intent = null;
+
+                //Switch that creates an intent based on the spinner value
                 switch (spinnerValue) {
                     case "Artist":
                         intent = MainActivity.newIntent(SearchPage.this, ArtistInfo.class);
@@ -126,6 +147,7 @@ public class SearchPage extends AppCompatActivity {
             }
         });
 
+        //Basic listeners for the bottom menu
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,5 +168,14 @@ public class SearchPage extends AppCompatActivity {
                 startActivity(MainActivity.newIntent(SearchPage.this, SearchPage.class));
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        /**
+         * Retrieves the search results and passes it to the new activity if the rotation is changed
+         */
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList("results", results);
     }
 }

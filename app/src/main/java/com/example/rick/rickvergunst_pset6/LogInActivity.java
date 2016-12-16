@@ -15,6 +15,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * Handles the log in of users and allows for navigation to the sign up, furthermore the page where users will land first
+ */
 public class LogInActivity extends AppCompatActivity {
 
     // Initialize variables
@@ -32,9 +35,12 @@ public class LogInActivity extends AppCompatActivity {
         // Firebase variables
         firebaseAuth = FirebaseAuth.getInstance();
 
+        //Assign the layout elements to variables
         userEdit = (EditText)findViewById(R.id.logInUserEdit);
         passEdit = (EditText)findViewById(R.id.logInPassEdit);
+
         logInButton = (Button)findViewById(R.id.logInButton);
+
         signUpText = (TextView)findViewById(R.id.signUpText);
 
         // Start sign up activity
@@ -53,6 +59,7 @@ public class LogInActivity extends AppCompatActivity {
                 String user = userEdit.getText().toString();
                 String pass = passEdit.getText().toString();
 
+                //Trims the data for whitespace
                 user = user.trim();
                 pass = pass.trim();
 

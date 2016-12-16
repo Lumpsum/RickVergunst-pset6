@@ -15,6 +15,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * Class that handles the sign up of a new user and allows for navigation to the log in page
+ */
 public class SignUpActivity extends AppCompatActivity {
 
     // Initialize variables
@@ -32,6 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
         // Firebase variables
         firebaseAuth = FirebaseAuth.getInstance();
 
+        //Assign the layout elements to variables
         userEdit = (EditText)findViewById(R.id.signUpUserEdit);
         passEdit = (EditText)findViewById(R.id.signUpPassEdit);
         signUpButton = (Button)findViewById(R.id.signUpButton);

@@ -22,8 +22,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import static com.example.rick.rickvergunst_pset6.LoadFonts.retrieveTypeFace;
+
+/**
+ * Class that defines an album retrieved from the last.fm api, furthermore shows users that like this album based on Firebase
+ */
 public class AlbumInfo extends AppCompatActivity {
 
+    //Initialize variables
     protected Button logOutButton;
     protected Button searchPageButton;
     protected Button homeButton;
@@ -50,9 +56,11 @@ public class AlbumInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_info);
 
+        //Retrieve data from source
         Intent intent = getIntent();
         album = intent.getStringExtra("name");
 
+        //Find the different elements of hte layout
         logOutButton = (Button)findViewById(R.id.logOutButton);
         searchPageButton = (Button)findViewById(R.id.toSearchPageButton);
         homeButton = (Button)findViewById(R.id.toHomeButton);
@@ -60,32 +68,52 @@ public class AlbumInfo extends AppCompatActivity {
 
         albumInfoTracksList = (ListView)findViewById(R.id.albumInfoTracksList);
         albumInfoSimilarUsers = (ListView)findViewById(R.id.albumInfoUserList);
+
         albumInfoTitle = (TextView)findViewById(R.id.albumInfoTitle);
         albumInfoArtist = (TextView)findViewById(R.id.albumInfoArtist);
 
+        //Set text and font of textviews
+        albumInfoTitle.setTypeface(retrieveTypeFace(this, 0));
         albumInfoTitle.setText(album.split("\\-")[1]);
+        albumInfoArtist.setTypeface(retrieveTypeFace(this, 0));
         albumInfoArtist.setText(album.split("\\-")[0]);
 
+        //Initialize firebase variables
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance().getReference();
         userId = firebaseUser.getUid();
 
+        //Check whether artist is in favourites and adjust button text accordingly
         ref = database.child("users").child(userId).child("favourites").orderByChild("album").equalTo(album);
         MainActivity.setButtonText(ref, albumInfoButton);
 
+        //Initliaze different arraylists
         array = new ArrayList<String>();
         similarUsers = new ArrayList<String>();
         similarUsersNames = new ArrayList<String>();
         similarUsersNamesId = new ArrayList<String>();
 
+        //Initialize the adapters
         albumTracksAdapter = new ArrayAdapter<String>(this, R.layout.list_item, array);
-        MainActivity.fillArray(album, "getInfo", "track", "album", "tracks", "album", array);
-        albumInfoTracksList.setAdapter(albumTracksAdapter);
-
         similarUsersAdapter = new ArrayAdapter<String>(this, R.layout.list_item, similarUsersNames);
+
+        //Fill the array adapter with API data
+        MainActivity.fillArray(album, "getInfo", "track", "album", "tracks", "album", array);
+
+        //Fiill the array with data from the firebase
+        findUsers(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.setUserArrays(database.child("usernames"), similarUsers, similarUsersNames, similarUsersNamesId, similarUsersAdapter);
+            }
+        });
+
+        //Assign the adapters to the listviews
+        albumInfoTracksList.setAdapter(albumTracksAdapter);
         albumInfoSimilarUsers.setAdapter(similarUsersAdapter);
 
+        //Set the on item clickers along with the needed data for the next activity
         albumInfoSimilarUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -115,14 +143,19 @@ public class AlbumInfo extends AppCompatActivity {
             }
         });
 
+        //Button handler that handles the instance where the user wants to add the labum
         albumInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Adds the album by creating a node for the album and adding the user to the album node
                 if (albumInfoButton.getText().equals("Add")) {
                     database.child("users").child(userId).child("favourites").push().child("album").setValue(album);
                     database.child("album").child(album).push().child("user").setValue(userId);
                     albumInfoButton.setText("Remove");
                 }
+
+                //Removes the album node from the favourites and removes the user from the album node
                 else {
                     ref = database.child("users").child(userId).child("favourites")
                             .orderByChild("album").equalTo(album);
@@ -135,13 +168,7 @@ public class AlbumInfo extends AppCompatActivity {
             }
         });
 
-        findUsers(new Runnable() {
-            @Override
-            public void run() {
-                MainActivity.setUserArrays(database.child("usernames"), similarUsers, similarUsersNames, similarUsersNamesId, similarUsersAdapter);
-            }
-        });
-
+        //General bottom menu button handlers
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,6 +192,10 @@ public class AlbumInfo extends AppCompatActivity {
     }
 
     public void findUsers(final Runnable onLoaded) {
+        /**
+         * Method that finds the user id's that are in your favourites or like the same things and afterwards
+         * finds the usernames that correspond to those found id's
+         */
         DatabaseReference ref = database.child("album").child(album);
         ref.addValueEventListener(new ValueEventListener() {
             @Override

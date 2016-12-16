@@ -9,7 +9,9 @@
     <RelativeLayout
         android:id="@+id/first"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/first"
+        >
 
     <TextView
         android:id="@+id/userInfoName"
@@ -18,6 +20,11 @@
         android:text=""
         android:layout_toLeftOf="@+id/userInfoAddRemoveButton"
         android:textSize="36dp"
+        android:textColor="@color/white"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
         />
 
     <Button
@@ -26,6 +33,10 @@
         android:layout_height="wrap_content"
         android:text=""
         android:layout_alignParentRight="true"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
         />
 
     </RelativeLayout>
@@ -41,12 +52,17 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.33"
+            android:background="@color/second"
             >
     <TextView
         android:id="@+id/userInfoFavArtist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/favouriteArtists"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
         />
 
     <ListView
@@ -60,12 +76,17 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.33"
+            android:background="@color/third"
             >
             <TextView
                 android:id="@+id/userInfoFavAlbum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/favouriteAlbums"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
                 />
 
             <ListView
@@ -79,12 +100,17 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.33"
+            android:background="@color/second"
             >
             <TextView
                 android:id="@+id/userInfoFavTrack"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/favouriteTracks"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin"
                 />
 
             <ListView
@@ -100,13 +126,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:background="@color/fourth"
         >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1"
             android:orientation="horizontal"
-            android:background="@color/colorPrimary"
             >
             <Button
                 android:id="@+id/toHomeButton"
